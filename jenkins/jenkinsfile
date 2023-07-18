@@ -1,20 +1,25 @@
 pipeline {
     agent any
-
+    
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                sh 'docker run --name mysql-container -p 3306:3306 -v ./mysqld.cnf -e MYSQL_ROOT_PASSWORD=senha_mysql -d mysql:latest'
+                sh './mysql_confgs.sh'
             }
         }
+        
         stage('Test') {
             steps {
-                echo 'Testing..'
+                // Faça os testes necessários no banco de dados
+                // Você pode usar comandos do MySQL para isso, como o comando 'mysql'
             }
         }
-        stage('Deploy') {
+        
+        stage('Cleanup') {
             steps {
-                echo 'Deploying....'
+                sh 'docker stop mysql-container'
+                sh 'docker rm mysql-container'
             }
         }
     }
